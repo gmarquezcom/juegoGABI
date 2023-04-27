@@ -1,3 +1,4 @@
+let conSonidos = 0
 let velocidadExplosion = 0
 let aumentarVelocidadCada = 0
 let puntuacion = 0
@@ -5,8 +6,12 @@ let velocidad = 0
 let vivo = 0
 let posicion = 0
 let linea = 0
+let velocidadMaxima = 0
 let hueco = 0
 function Explosion () {
+    if (conSonidos == 1) {
+        music.playTone(262, music.beat(BeatFraction.Whole))
+    }
     basic.showLeds(`
         . . . . .
         . . . . .
@@ -14,6 +19,9 @@ function Explosion () {
         . . . . .
         . . # . .
         `)
+    if (conSonidos == 1) {
+        music.playTone(262, music.beat(BeatFraction.Whole))
+    }
     basic.pause(velocidadExplosion)
     basic.showLeds(`
         . . . . .
@@ -22,6 +30,9 @@ function Explosion () {
         . . # . .
         . # . # .
         `)
+    if (conSonidos == 1) {
+        music.playTone(262, music.beat(BeatFraction.Whole))
+    }
     basic.pause(velocidadExplosion)
     basic.showLeds(`
         . . . . .
@@ -113,6 +124,8 @@ function Iniciar () {
     posicion = 2
     linea = 0
     velocidadExplosion = 10
+    velocidadMaxima = 200
+    conSonidos = 0
     led.plot(posicion, 4)
 }
 function EvaluaSiToca () {
@@ -144,6 +157,14 @@ function MueveDerecha () {
         led.plot(posicion, 4)
     }
 }
+input.onGesture(Gesture.Shake, function () {
+    if (conSonidos == 1) {
+        conSonidos = 0
+    } else {
+        music.playTone(554, music.beat(BeatFraction.Eighth))
+        conSonidos = 1
+    }
+})
 input.onButtonPressed(Button.AB, function () {
     Iniciar()
     while (vivo == 1) {
@@ -151,6 +172,9 @@ input.onButtonPressed(Button.AB, function () {
         basic.pause(velocidad)
         if (linea == 4) {
             EvaluaSiToca()
+            if (conSonidos == 1) {
+                music.playTone(988, music.beat(BeatFraction.Eighth))
+            }
             linea = 0
             AumentaVelocidad()
         } else {
@@ -175,6 +199,9 @@ function MueveIzquierda () {
 function AumentaVelocidad () {
     if (puntuacion % aumentarVelocidadCada == 0) {
         velocidad = velocidad - 100
+        if (velocidad < velocidadMaxima) {
+            velocidad = velocidadMaxima
+        }
     }
 }
 function AvanzaPared () {
